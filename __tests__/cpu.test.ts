@@ -1,4 +1,4 @@
-import { CPU } from "./cpu.ts";
+import { CPU } from "../cpu.ts";
 import * as asserts from "https://deno.land/std@0.76.0/testing/asserts.ts";
 
 Deno.test("0xa9_lda_immediate_load_data", () => {
