@@ -1,31 +1,28 @@
-type Filter<T, Cond, U extends keyof T = keyof T> = {
-  [K in U]: T[K] extends Cond ? K : never;
-}[U];
-
-type EKey<T> = Filter<T, boolean> & string;
-
-export class BitMask<T> {
-  public fields: {[K in EKey<T>]?: boolean};
-  constructor(fields: {[K in EKey<T>]?: boolean}) {
-    this.fields = fields;
+export class BitMask<T extends number> {
+  constructor(public value: number = 0) { }
+  public get(field: T): boolean {
+    return (this.value & (1 << field)) != 0;
   }
-  public set<K extends EKey<T>>(field: K): number {
-    this.fields[field] = true;
-    return this.valueOf();
+  public set(field: T): number;
+  public set(field: T, value: boolean): number;
+  public set(field: T, value: boolean = true): number {
+    if (value) {
+      this.value |= 1 << field;
+      return this.value;
+    } else {
+      this.value &= ~(1 << field);
+      return this.value;
+    }
   }
-  public unset<K extends EKey<T>>(field: K): number {
-    this.fields[field] = false;
-    return this.valueOf();
+  public unset(field: T): number {
+    this.value &= ~(1 << field);
+    return this.value;
   }
-  public toggle<K extends EKey<T>>(field: K): number {
-    this.fields[field] = !this.fields[field];
-    return this.valueOf();
+  public toggle(field: T): number {
+    this.value ^= 1 << field;
+    return this.value;
   }
-  public valueOf<K extends EKey<T>>(): number {
-    let v = 0;
-    Object.keys(this.fields).forEach((k, i) => {
-      if (this.fields[k as K]) v |= 1 << i
-    });
-    return v;
+  public valueOf(): number {
+    return this.value;
   }
 }
